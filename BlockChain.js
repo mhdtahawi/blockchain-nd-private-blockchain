@@ -20,7 +20,7 @@ class Blockchain {
     generateGenesisBlock(){
         return this.getBlockHeight()
         .then(count => {
-            if (count == 0) {
+            if (count == -1) {
                 const newBlock = new Block.Block("First block in the chain - Genesis block")
                 // Block height
                 newBlock.height = 0;
@@ -36,14 +36,14 @@ class Blockchain {
     
     // Get block height, it is auxiliar method that return the height of the blockchain
     getBlockHeight() {
-        return this.bd.getBlocksCount();
+        return this.bd.getBlocksCount().then( count => count - 1); 
     }
     
     // Add new block
     addBlock(block) {
         return this.getBlockHeight()
             .then(count => {
-                return this.getBlock(count -1)
+                return this.getBlock(count)
                     .then(latestBlock => {
                         block.height = latestBlock.height + 1;
                         block.previousBlockHash = latestBlock.hash;
@@ -91,7 +91,7 @@ _validateBLock(block) {
                 errorLog: [],
                 previousHash: undefined 
             };
-            return [... Array(count)].map( ( _, i ) => i) // fill array with numbers from 0 to count - 1
+            return [... Array(count  + 1)].map( ( _, i ) => i) // fill array with numbers from 0 to count - 1
                     .reduce( (accumleator, height) => {
                         return accumleator.then( acc => {
                             return this.getBlock(height).then(block => {
@@ -108,8 +108,8 @@ _validateBLock(block) {
         })
         .then (result =>{
             const log = result.errorLog;
-            if (log.length>0) {
-                console.log('Block errors = ' + errorLog.log);
+            if (log.length > 0) {
+                console.log('Block errors = ' + log.length);
                 console.log('Blocks: '+ log);
               } else {
                 console.log('No errors detected');
