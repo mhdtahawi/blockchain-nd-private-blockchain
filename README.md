@@ -1,6 +1,6 @@
 # Project #2. Private Blockchain
 
-This is Project 2, Private Blockchain, in this project I created the classes to manage my private blockchain, to be able to persist my blochchain I used LevelDB.
+This is Project 2, Private Blockchain, in this project I created the classes to manage my private blockchai, using LevelDB to presist the data, and express framework to create the API..
 
 ## Setup project for Review.
 
@@ -104,8 +104,18 @@ myBlockChain.validateChain().then((errorLog) => {
 
 This function validates the whole chain and return a list of errors found during the validation.
 
-## What do I learned with this Project
+## Webservice documentation 
+To run the server: node BlockAPI.js
+The server exposes two endpints:
+* GET /api/block/<blockHeight> : gets the info of the block with height <blockHeight>
+* POST /api/block: add a new block to the chain, must send the data of the block as: 
+{
+	body: "data goes here"
+}
+
+## What did I learne with this Project
 
 * I was able to identify the basic data model for a Blockchain application.
 * I was able to use LevelDB to persist the Blockchain data.
 * I was able to write algorithms for basic operations in the Blockchain.
+* I was able to create a basic API and expose my private blockchain through a webservice.
