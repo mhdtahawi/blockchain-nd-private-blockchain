@@ -1,6 +1,8 @@
 const SHA256 = require('crypto-js/sha256');
 const BlockClass = require('./Block.js');
 const BlockChain = require('./BlockChain');
+const Mempool = require('./Mempool');
+
 
 /**
  * Controller Definition to encapsulate routes to work with blocks
@@ -12,9 +14,7 @@ class BlockController {
      * @param {*} app 
      */
     constructor(app) {
-        this.REQUEST_TIMEOUT_IN_SECONDS = 5 * 60;
-        this.mempool = {};
-        this.timeoutRequests = {};
+        this.mempool = new Mempool.Mempool();
         this.app = app;
         this.blocks = new BlockChain.Blockchain();
         this.initializeMockData();
@@ -51,28 +51,13 @@ class BlockController {
     /**
      * Implement a POST Endpoint to add a new validation request, url: "/requestValidation"
      */
-    requestValidation() {
+     requestValidation() {
         this.app.post("/requestValidation", (req, res) => {
             const address = req.body.address
             if (! address){
                 res.status(400).send("Request must contain wallet address to establish your identity");
-            } else if (this.mempool[address]) {
-                const n = (new Date().getTime().toString().slice(0,-3));
-                let timeElapse = n - this.mempool[address].requestTimeStamp;
-                let timeLeft = (this.REQUEST_TIMEOUT_IN_SECONDS) - timeElapse;
-                this.mempool[address].validationWindow = timeLeft;
-                res.json(this.mempool[address]);
             } else {
-                const timestamp = new Date().getTime().toString().slice(0,-3);
-                const validationRequest = {
-                        "walletAddress": address,
-                        "requestTimeStamp": timestamp,
-                        "message": `${req.body.address}:${timestamp}:starRegistry`,
-                        "validationWindow": this.REQUEST_TIMEOUT_IN_SECONDS
-                }
-                this.mempool[address] = validationRequest;
-                this.timeoutRequests[address] = setTimeout( () => this._removeValidationRequest(address), this.REQUEST_TIMEOUT_IN_SECONDS * 1000);
-                res.json(validationRequest)
+                res.json(this.mempool.addValidationRequest(address));
             }
         });
     }
@@ -90,12 +75,6 @@ class BlockController {
             }
         }
     }
-
-    _removeValidationRequest(address) {
-        delete this.mempool[address];
-        delete this.timeoutRequests[address];
-    }
-
 }
 
 /**
