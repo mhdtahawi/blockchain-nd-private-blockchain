@@ -20,6 +20,7 @@ class BlockController {
         this.initializeMockData();
         this.getBlockByIndex();
         this.requestValidation();
+        this.validate();
         this.postNewBlock();
     }
 
@@ -44,6 +45,27 @@ class BlockController {
                     .then(addedBlock => res.json(JSON.parse(addedBlock)));
             } else {
                 res.status(400).send("Can't create a block without data");
+            }
+        });
+    }
+
+    /**
+     * Implement a POST Endpoint to validate a  request, url: "/message-signature/validate"
+     */
+    validate() {
+        this.app.post("/message-signature/validate", (req, res) => {
+            const address = req.body.address;
+            const signature = req.body.signature;
+            
+            if (address && signature) {
+                const validationResult = this.mempool.validate(address, signature);    
+                if(validationResult) {
+                    res.json(validationResult);
+                } else {
+                    res.status(404).send(`No validation request found in memory pool. Please validate within ${this.mempool.getTimeOutInSeconds()} second(s) of your validation request`);
+                }
+            } else {
+                res.status(400).send("Can't validate. Body must contain address and signature");
             }
         });
     }
