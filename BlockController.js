@@ -23,6 +23,7 @@ class BlockController {
         this.requestValidation();
         this.validate();
         this.getBlockByHash();
+        this.getBlockByAddress();
         this.postNewBlock();
     }
 
@@ -45,6 +46,16 @@ class BlockController {
             .then(block => res.json(this._addDecodedStory(block)))
         });
     }
+
+        /**
+     * Implement a GET Endpoint to retrieve a block by address, url: "/address:[ADDRESS]"
+     */
+    getBlockByAddress() {
+        this.app.get("/address::address", (req, res) => {
+            this.blocks.getBlocskByAddress(req.params.address)
+            .then(blocks => res.json(blocks.map(this._addDecodedStory)));
+    })
+}
 
     /**
      * Implement a POST Endpoint to add a new Block, url: "/block"
@@ -130,8 +141,6 @@ class BlockController {
     }
 
     _addDecodedStory(block) {
-        console.log(block);
-        console.log(typeof block);
         const reply = typeof block == 'string'? JSON.parse(block) : block;
         reply.body.star.decodedStory = hex2ascii(reply.body.star.story);
         return reply;
