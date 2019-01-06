@@ -28,11 +28,11 @@ class BlockController {
     }
 
     /**
-     * Implement a GET Endpoint to retrieve a block by index, url: "/api/block/:index"
+     * Implement a GET Endpoint to retrieve a block by index, url: "/block/:height"
      */
     getBlockByIndex() {
-        this.app.get("/api/block/:index", (req, res) => {
-            this.blocks.getBlock(req.params.index)
+        this.app.get("/block/:height", (req, res) => {
+            this.blocks.getBlock(req.params.height)
             .then(block => res.json(block))
         });
     }
