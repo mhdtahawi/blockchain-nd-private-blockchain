@@ -60,6 +60,12 @@ class Blockchain {
                 return JSON.parse(block);
             });
     }
+
+    // Get Block By hash
+    getBlockByHash(hash) {
+        return this.bd.getBlockByHash(hash)
+            .then(block => block )
+    }
     
     // Validate if Block is being tampered by Block Height
     validateBlock(height) {

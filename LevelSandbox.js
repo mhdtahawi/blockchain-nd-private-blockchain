@@ -29,6 +29,28 @@ class LevelSandbox {
             });
         });
     }
+
+    getBlockByHash(hash) {
+        let self = this;
+        let block;
+        return new Promise(function(resolve, reject) {
+            self.db.createReadStream()
+            .on('data', function (data) {
+                if(JSON.parse(data.value).hash == hash){
+                    block = data.value;
+                }
+            })
+            .on('error', function (err) {
+                // reject with error
+                reject(err);
+            })
+            .on('close', function () {
+                //resolve with the count value
+                resolve(block);
+            });
+        });
+
+    }
     
     // Add data to levelDB with key and value (Promise)
     addLevelDBData(key, value) {

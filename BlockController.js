@@ -22,6 +22,7 @@ class BlockController {
         this.getBlockByIndex();
         this.requestValidation();
         this.validate();
+        this.getBlockByHash();
         this.postNewBlock();
     }
 
@@ -32,6 +33,16 @@ class BlockController {
         this.app.get("/api/block/:index", (req, res) => {
             this.blocks.getBlock(req.params.index)
             .then(block => res.json(block))
+        });
+    }
+
+    /**
+     * Implement a GET Endpoint to retrieve a block by hash, url: "/star:[HASH]"
+     */
+    getBlockByHash() {
+        this.app.get("/star::hash", (req, res) => {
+            this.blocks.getBlockByHash(req.params.hash)
+            .then(block => res.json(this._addDecodedStory(block)))
         });
     }
 
@@ -56,7 +67,8 @@ class BlockController {
                 };
                 this.blocks.addBlock(new BlockClass.Block(body))
                 .then(addedBlock => {
-                    res.json(_addDecodedStory(addedBlock));
+                    console.log(addedBlock);
+                    res.json(this._addDecodedStory(addedBlock));
                 });
                     
                 } else {
@@ -118,7 +130,9 @@ class BlockController {
     }
 
     _addDecodedStory(block) {
-        const reply = JSON.parse(block);
+        console.log(block);
+        console.log(typeof block);
+        const reply = typeof block == 'string'? JSON.parse(block) : block;
         reply.body.star.decodedStory = hex2ascii(reply.body.star.story);
         return reply;
     }
