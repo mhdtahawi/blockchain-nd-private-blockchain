@@ -8,6 +8,10 @@ class Mempool {
         this.timeoutRequests = {};
         this.mempoolValid = {};
     }
+
+    isAddressValidated(address) {
+        return this.mempoolValid.hasOwnProperty(address);
+    }
     
     addValidationRequest(address) {
         const now = new Date().getTime().toString().slice(0,-3);

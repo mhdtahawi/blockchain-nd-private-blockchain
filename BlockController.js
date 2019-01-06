@@ -2,6 +2,7 @@ const SHA256 = require('crypto-js/sha256');
 const BlockClass = require('./Block.js');
 const BlockChain = require('./BlockChain');
 const Mempool = require('./Mempool');
+const hex2ascii = require('hex2ascii');
 
 
 /**
@@ -35,16 +36,36 @@ class BlockController {
     }
 
     /**
-     * Implement a POST Endpoint to add a new Block, url: "/api/block"
+     * Implement a POST Endpoint to add a new Block, url: "/block"
      */
     postNewBlock() {
-        this.app.post("/api/block", (req, res) => {
-            const data = req.body.body;
-            if (data){
-                this.blocks.addBlock(new BlockClass.Block(data))
-                    .then(addedBlock => res.json(JSON.parse(addedBlock)));
+        this.app.post("/block", (req, res) => {
+            const data = req.body;
+
+            if( data.address && data.star && ! Array.isArray(data.star)) {
+                if (this.mempool.isAddressValidated(data.address)) {
+                    const body = {
+                        address: data.address,
+                        star: {
+                              ra: data.star.ra,
+                              dec: data.star.dec,
+                              mag: data.star.mag,
+                              cen: data.star.cen,
+                              story: Buffer(data.star.story).toString('hex')
+                              }       
+                };
+                this.blocks.addBlock(new BlockClass.Block(body))
+                .then(addedBlock => {
+                    const reply = JSON.parse(addedBlock);
+                    reply.body.star.decodedStory = hex2ascii(reply.body.star.story);
+                    res.json(reply);
+                });
+                    
+                } else {
+                    res.status(400).json({error: "address not validated"});
+                }
             } else {
-                res.status(400).send("Can't create a block without data");
+                res.status(400).json({error: "malformed request"});
             }
         });
     }
