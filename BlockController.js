@@ -56,9 +56,7 @@ class BlockController {
                 };
                 this.blocks.addBlock(new BlockClass.Block(body))
                 .then(addedBlock => {
-                    const reply = JSON.parse(addedBlock);
-                    reply.body.star.decodedStory = hex2ascii(reply.body.star.story);
-                    res.json(reply);
+                    res.json(_addDecodedStory(addedBlock));
                 });
                     
                 } else {
@@ -117,6 +115,12 @@ class BlockController {
                 this.blocks.push(blockAux);
             }
         }
+    }
+
+    _addDecodedStory(block) {
+        const reply = JSON.parse(block);
+        reply.body.star.decodedStory = hex2ascii(reply.body.star.story);
+        return reply;
     }
 }
 
