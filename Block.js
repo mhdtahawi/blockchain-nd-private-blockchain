@@ -8,7 +8,7 @@ class Block {
 		this.hash = "",
 		this.height = 0,
 		this.body = data,
-		this.time = 0,
+		this.time = new Date().getTime().toString().slice(0,-3),
 		this.previousBlockHash = ""
 	}
 }
