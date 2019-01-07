@@ -32,26 +32,30 @@ class BlockController {
      */
     getBlockByIndex() {
         this.app.get("/block/:height", (req, res) => {
-            this.blocks.getBlock(req.params.height)
-            .then(block => res.json(block))
+            if (req.params.height < 0 ){
+                res.json({error: "Block index can't be negative"});
+            } else {
+                this.blocks.getBlock(req.params.height)
+                .then(block => res.json(req.params.height == 0 ? block : this._addDecodedStory(block)))
+            }
         });
     }
 
     /**
-     * Implement a GET Endpoint to retrieve a block by hash, url: "/star:[HASH]"
+     * Implement a GET Endpoint to retrieve a block by hash, url: "/stars/hash:[HASH]"
      */
     getBlockByHash() {
-        this.app.get("/star::hash", (req, res) => {
+        this.app.get("/stars/hash::hash", (req, res) => {
             this.blocks.getBlockByHash(req.params.hash)
             .then(block => res.json(this._addDecodedStory(block)))
         });
     }
 
         /**
-     * Implement a GET Endpoint to retrieve a block by address, url: "/address:[ADDRESS]"
+     * Implement a GET Endpoint to retrieve a block by address, url: "/stars/address:[ADDRESS]"
      */
     getBlockByAddress() {
-        this.app.get("/address::address", (req, res) => {
+        this.app.get("/stars/address::address", (req, res) => {
             this.blocks.getBlocskByAddress(req.params.address)
             .then(blocks => res.json(blocks.map(this._addDecodedStory)));
     })
@@ -64,7 +68,8 @@ class BlockController {
         this.app.post("/block", (req, res) => {
             const data = req.body;
 
-            if( data.address && data.star && ! Array.isArray(data.star)) {
+            if( data.address && data.star && ! Array.isArray(data.star) 
+                && star.story && star.ra && star.dec) {
                 if (this.mempool.isAddressValidated(data.address)) {
                     const body = {
                         address: data.address,
