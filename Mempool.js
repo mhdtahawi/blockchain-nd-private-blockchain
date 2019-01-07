@@ -72,6 +72,10 @@ class Mempool {
     getTimeOutInSeconds() {
         return this.REQUEST_TIMEOUT_IN_SECONDS;
     }
+
+    removeFromValidatedPool(address){
+        delete this.mempoolValid[address];
+    }
        
     _removeValidationRequest(address) {
         delete this.mempool[address];

@@ -79,6 +79,7 @@ class BlockController {
                 this.blocks.addBlock(new BlockClass.Block(body))
                 .then(addedBlock => {
                     console.log(addedBlock);
+                    this.mempool.removeFromValidatedPool(data.address);
                     res.json(this._addDecodedStory(addedBlock));
                 });
                     
