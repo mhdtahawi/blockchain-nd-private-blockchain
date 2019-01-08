@@ -69,7 +69,7 @@ class BlockController {
             const data = req.body;
 
             if( data.address && data.star && ! Array.isArray(data.star) 
-                && star.story && star.ra && star.dec) {
+                && data.star.story && data.star.ra && data.star.dec) {
                 if (this.mempool.isAddressValidated(data.address)) {
                     const body = {
                         address: data.address,
@@ -78,13 +78,13 @@ class BlockController {
                               dec: data.star.dec,
                               mag: data.star.mag,
                               cen: data.star.cen,
-                              story: Buffer(data.star.story).toString('hex')
+                              story: Buffer.from(data.star.story).toString('hex')
                               }       
                 };
                 this.blocks.addBlock(new BlockClass.Block(body))
                 .then(addedBlock => {
                     console.log(addedBlock);
-                    this.mempool.removeFromValidatedPool(data.address);
+                    this.mempool.removeFromPool(data.address);
                     res.json(this._addDecodedStory(addedBlock));
                 });
                     
